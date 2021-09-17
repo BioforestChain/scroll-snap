@@ -1,6 +1,6 @@
 {
   "name": "@bfchain/scroll-snap",
-  "version": "1.5.3",
+  "version": "1.0.0",
   "main": "./dist/scroll-snap.iife.js",
   "exports": {
     ".": {
