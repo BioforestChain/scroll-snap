@@ -58,7 +58,9 @@ export class ScrollSnapElement extends LitElement {
     }
     this._onlayoutchange = value;
   }
-  bindScrollEvent() {
+  async bindScrollEvent() {
+    //if you use the angular,must be wait the component completed
+    await this.updateComplete;
     const scrollContainer = this.querySelector("[name='scroll-container']");
     if (!scrollContainer) {
       throw new Error(
