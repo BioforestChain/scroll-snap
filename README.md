@@ -11,7 +11,7 @@ When I discovered that CSS scroll-snap was used, there were no event callbacks w
 This project uses [npm](https://npmjs.com). Go check them out if you don't have them locally installed.
 
 ```sh
-$ npm install @bfchain/virtual-scroll --save
+$ npm install @bfchain/scroll-snap --save
 ```
 
 ## Usage
