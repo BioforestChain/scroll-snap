@@ -1,0 +1,35 @@
+{
+  "name": "@bfchain/scroll-snap",
+  "version": "1.5.3",
+  "main": "./dist/scroll-snap.iife.js",
+  "exports": {
+    ".": {
+      "import": "./dist/scroll-snap.es.js",
+      "require": "./dist/scroll-snap.cjs.js"
+    }
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BioforestChain/scroll-snap.git"
+  },
+  "types": "types/index.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 4600",
+    "publ": "npm publ --access public",
+    "build": "tsc && vite build && vite build -c .\\vite-iife.config.ts && vite build -c .\\vite-demo.config.ts --base=./",
+    "vite": "vite"
+  },
+  "dependencies": {
+    "lit-element": "^2.4.0"
+  },
+  "devDependencies": {
+    "rollup-plugin-minify-html-literals": "^1.2.6",
+    "typescript": "^4.3.2",
+    "vite": "^2.4.4"
+  }
+}

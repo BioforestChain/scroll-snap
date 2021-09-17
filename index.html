@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Scroll Snap - WebComponent</title>
+    <script type="module" src="/src/index.ts"></script>
+  </head>
+  <body>
+    <scroll-snap 
+    onlayoutchange="layoutChange(event,this)">
+      <style>
+        .slides {
+          width: 200px;
+          height: 300px;
+          overflow: scroll hidden;
+          scroll-snap-type: x mandatory;
+          display: flex;
+        }
+        .slide {
+          height: 100%;
+          scroll-snap-align: center;
+          scroll-snap-stop: always;
+          flex: none;
+        }
+        .slide1 {
+          width: 100%;
+          background-color: blanchedalmond;
+        }
+        .slide2 {
+          width: 50px;
+          background-color: aqua;
+        }
+      </style>
+      <div
+        class="slides"
+        name="scroll-container"
+      >
+        <div class="slide slide1"></div>
+        <div class="slide slide2"></div>
+      </div>
+    </scroll-snap>
+  </body>
+  <script>
+    function layoutChange(event) {
+      //do everything what you want
+      console.log(event);
+    }
+  </script>
+</html>
