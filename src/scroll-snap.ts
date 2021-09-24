@@ -25,21 +25,57 @@ export type Point = {
 
 @customElement("scroll-snap")
 export class ScrollSnapElement extends LitElement {
+  private _direction: "horizontal" | "vertical" = "horizontal";
   constructor() {
     super();
-    console.log(this.firstElementChild);
+    this.initElement();
+
     // bind custom events
     this.addEventListener("layoutchange", (event) => {
       this._onlayoutchange?.(event as LayoutChangeEvent);
     });
-    this.bindScrollEvent();
+  }
+  /**
+   * 初始化组件内容
+   */
+  async initElement() {
+    // wait the component completed
+    await this.updateComplete;
+    const scrollContainer = this.querySelector(
+      "[name='scroll-container']"
+    ) as HTMLElement | null;
+    if (!scrollContainer) {
+      throw new Error(
+        "Please set the attribute name='scroll-container' in you scroll template"
+      );
+    }
+    const containerStyle = window.getComputedStyle(scrollContainer, null);
+    const scrollSnapType = containerStyle.scrollSnapType;
+    if (scrollSnapType.includes("x")) {
+      this._direction = "horizontal";
+    } else if (scrollSnapType.includes("y")) {
+      this._direction = "vertical";
+    } else {
+      console.error(
+        "This element may be doesn't work, if the value of 'scroll-snap-type' is not set or invalid."
+      );
+    }
+
+    this.bindScrollEvent(scrollContainer);
   }
 
+  /**
+   * slot绑定组件
+   * @returns
+   */
   render(): TemplateResult {
     return html`<slot></slot>`;
   }
 
-  protected _onlayoutchange?: LayoutChangeHanlder;
+  /**
+   * layout切换监听事件
+   */
+  private _onlayoutchange?: LayoutChangeHanlder;
   @property({ attribute: "onlayoutchange" })
   public get onlayoutchange(): null | LayoutChangeHanlder {
     return this._onlayoutchange || null;
@@ -58,15 +94,12 @@ export class ScrollSnapElement extends LitElement {
     }
     this._onlayoutchange = value;
   }
-  async bindScrollEvent() {
-    //if you use the angular,must be wait the component completed
-    await this.updateComplete;
-    const scrollContainer = this.querySelector("[name='scroll-container']");
-    if (!scrollContainer) {
-      throw new Error(
-        "Please set the attribute name='scroll-container' in you scroll template"
-      );
-    }
+
+  private _currentLayoutIndex = 0;
+  /**
+   * 注册并绑定layout切换监听事件
+   */
+  async bindScrollEvent(scrollContainer: HTMLElement) {
     scrollContainer.addEventListener("scroll", ($event) => {
       const currentTarget = $event.target as HTMLElement | null;
       if (currentTarget) {
@@ -101,6 +134,7 @@ export class ScrollSnapElement extends LitElement {
             rightBottomPoint.y >= itemRightBottomPoint.y
           ) {
             //emit the layout change event
+            this._currentLayoutIndex = i;
             this._emitLayoutChange({ index: i, target: item });
             break;
           }
@@ -120,6 +154,62 @@ export class ScrollSnapElement extends LitElement {
     // }
 
     this.dispatchEvent(this._layoutChangeEvent);
+  }
+  /**
+   * 卡片滑动
+   * @param element
+   * @param distance
+   */
+  private _scrollTo(element: HTMLElement, distance: number) {
+    const options: ScrollToOptions = { behavior: "smooth" };
+    this._direction === "horizontal"
+      ? (options.left = element.scrollLeft + distance)
+      : (options.top = element.scrollTop + distance);
+    element.scrollTo(options);
+  }
+  /**
+   * 根据index切换卡片
+   * @param layoutIndex
+   */
+  public changeLayoutByIndex(layoutIndex: number) {
+    const scrollContainer = this.querySelector(
+      "[name='scroll-container']"
+    )! as HTMLElement;
+    const childrenCount = scrollContainer.childElementCount - 1;
+    //0 <= layoutIndex <= childrenCount
+    layoutIndex = Math.min(Math.max(layoutIndex, 0), childrenCount);
+    //calculate move distance
+    let diffCount = layoutIndex - this._currentLayoutIndex;
+    let _moveDistance = 0;
+    while (diffCount) {
+      const itemBoundary =
+        scrollContainer.children[
+          this._currentLayoutIndex + diffCount
+        ]!.getBoundingClientRect();
+      _moveDistance +=
+        this._direction === "horizontal"
+          ? itemBoundary.width
+          : itemBoundary.height;
+      diffCount > 0 ? diffCount-- : diffCount++;
+    }
+    if (_moveDistance) {
+      _moveDistance =
+        layoutIndex > this._currentLayoutIndex ? _moveDistance : -_moveDistance;
+      this._scrollTo(scrollContainer, _moveDistance);
+    }
+    // for()
+  }
+  /**
+   * 上一个卡片
+   */
+  public PreciousLayout() {
+    this.scrollToLayoutByIndex(this._currentLayoutIndex - 1);
+  }
+  /**
+   * 下一个卡片
+   */
+  public NextLayout() {
+    this.scrollToLayoutByIndex(this._currentLayoutIndex + 1);
   }
 }
 
