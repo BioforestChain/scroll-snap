@@ -16,6 +16,7 @@ $ npm install @bfchain/scroll-snap --save
 
 ## Usage
 
+```sh
 <scroll-snap onlayoutchange="layoutChange(event,this)">
     <div name="scroll-container">
         <div class="slide slide1"></div>
@@ -23,12 +24,11 @@ $ npm install @bfchain/scroll-snap --save
     </div>
 </scroll-snap>
 
-```sh
 # Remember add attribute`name="scroll-container"` to the element when you use it.
 ```
 
 ## Example Readmes
-
+```sh
 <scroll-snap onlayoutchange="layoutChange(event,this)">
     <style>
         .slides {
@@ -58,7 +58,7 @@ $ npm install @bfchain/scroll-snap --save
         <div class="slide slide2"></div>
     </div>
 </scroll-snap>
-
+```
 ## Maintainers
 
 [@Huiyong-Chen](https://github.com/Huiyong-Chen)。

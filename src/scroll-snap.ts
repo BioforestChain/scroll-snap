@@ -50,7 +50,8 @@ export class ScrollSnapElement extends LitElement {
       );
     }
     const containerStyle = window.getComputedStyle(scrollContainer, null);
-    const scrollSnapType = containerStyle.scrollSnapType;
+    //逃避一下检测
+    const scrollSnapType = (containerStyle as any).scrollSnapType;
     if (scrollSnapType.includes("x")) {
       this._direction = "horizontal";
     } else if (scrollSnapType.includes("y")) {
@@ -203,13 +204,13 @@ export class ScrollSnapElement extends LitElement {
    * 上一个卡片
    */
   public PreciousLayout() {
-    this.scrollToLayoutByIndex(this._currentLayoutIndex - 1);
+    this.changeLayoutByIndex(this._currentLayoutIndex - 1);
   }
   /**
    * 下一个卡片
    */
   public NextLayout() {
-    this.scrollToLayoutByIndex(this._currentLayoutIndex + 1);
+    this.changeLayoutByIndex(this._currentLayoutIndex + 1);
   }
 }
 
