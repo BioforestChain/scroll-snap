@@ -10,8 +10,7 @@
     <script type="module" src="/src/index.ts"></script>
   </head>
   <body>
-    <scroll-snap 
-    onlayoutchange="layoutChange(event,this)">
+    <scroll-snap onlayoutchange="layoutChange(event,this)" init-slide="1">
       <style>
         .slides {
           width: 200px;
@@ -31,16 +30,25 @@
           background-color: blanchedalmond;
         }
         .slide2 {
-          width: 50px;
-          background-color: aqua;
+          width: 100%;
+          background-color: yellow;
+        }
+
+        .slide3 {
+          width: 100%;
+          background-color: hotpink;
+        }
+
+        .slide4 {
+          width: 100%;
+          background-color: skyblue;
         }
       </style>
-      <div
-        class="slides"
-        name="scroll-container"
-      >
+      <div class="slides" name="scroll-container">
         <div class="slide slide1"></div>
         <div class="slide slide2"></div>
+        <div class="slide slide3"></div>
+        <div class="slide slide4"></div>
       </div>
     </scroll-snap>
   </body>

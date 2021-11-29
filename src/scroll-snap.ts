@@ -61,6 +61,22 @@ export class ScrollSnapElement extends LitElement {
         "This element may be doesn't work, if the value of 'scroll-snap-type' is not set or invalid."
       );
     }
+    if (
+      this._initSlideIdx < 0 ||
+      this._initSlideIdx >= scrollContainer.childElementCount
+    ) {
+      throw new Error("init-slide error.");
+    }
+    //初始化卡片
+    const moveDistance = this._calcMoveDistance(
+      scrollContainer,
+      this.initSlideIdx
+    );
+    if (this._direction === "horizontal") {
+      scrollContainer.scrollLeft += moveDistance;
+    } else {
+      scrollContainer.scrollTop += moveDistance;
+    }
 
     this.bindScrollEvent(scrollContainer);
   }
@@ -71,6 +87,18 @@ export class ScrollSnapElement extends LitElement {
    */
   render(): TemplateResult {
     return html`<slot></slot>`;
+  }
+
+  /**
+   * 初始化layout
+   */
+  private _initSlideIdx: number = 0;
+  @property({ attribute: "init-slide" })
+  public get initSlideIdx(): number {
+    return this._initSlideIdx;
+  }
+  public set initSlideIdx(value: number) {
+    this._initSlideIdx = value;
   }
 
   /**
@@ -168,6 +196,31 @@ export class ScrollSnapElement extends LitElement {
       : (options.top = element.scrollTop + distance);
     element.scrollTo(options);
   }
+  /**计算卡片移动距离 */
+  private _calcMoveDistance(element: HTMLElement, layoutIndex: number) {
+    const childrenCount = element.childElementCount - 1;
+    //0 <= layoutIndex <= childrenCount
+    layoutIndex = Math.min(Math.max(layoutIndex, 0), childrenCount);
+    //calculate move distance
+    let diffCount = layoutIndex - this._currentLayoutIndex;
+    let moveDistance = 0;
+    while (diffCount) {
+      const itemBoundary =
+        element.children[
+          this._currentLayoutIndex + diffCount
+        ]!.getBoundingClientRect();
+      moveDistance +=
+        this._direction === "horizontal"
+          ? itemBoundary.width
+          : itemBoundary.height;
+      diffCount > 0 ? diffCount-- : diffCount++;
+    }
+    if (moveDistance) {
+      moveDistance =
+        layoutIndex > this._currentLayoutIndex ? moveDistance : -moveDistance;
+    }
+    return moveDistance;
+  }
   /**
    * 根据index切换卡片
    * @param layoutIndex
@@ -176,28 +229,9 @@ export class ScrollSnapElement extends LitElement {
     const scrollContainer = this.querySelector(
       "[name='scroll-container']"
     )! as HTMLElement;
-    const childrenCount = scrollContainer.childElementCount - 1;
-    //0 <= layoutIndex <= childrenCount
-    layoutIndex = Math.min(Math.max(layoutIndex, 0), childrenCount);
-    //calculate move distance
-    let diffCount = layoutIndex - this._currentLayoutIndex;
-    let _moveDistance = 0;
-    while (diffCount) {
-      const itemBoundary =
-        scrollContainer.children[
-          this._currentLayoutIndex + diffCount
-        ]!.getBoundingClientRect();
-      _moveDistance +=
-        this._direction === "horizontal"
-          ? itemBoundary.width
-          : itemBoundary.height;
-      diffCount > 0 ? diffCount-- : diffCount++;
-    }
-    if (_moveDistance) {
-      _moveDistance =
-        layoutIndex > this._currentLayoutIndex ? _moveDistance : -_moveDistance;
-      this._scrollTo(scrollContainer, _moveDistance);
-    }
+    const moveDistance = this._calcMoveDistance(scrollContainer, layoutIndex);
+
+    this._scrollTo(scrollContainer, moveDistance);
     // for()
   }
   /**
