@@ -77,6 +77,7 @@ export class ScrollSnapElement extends LitElement {
     } else {
       scrollContainer.scrollTop += moveDistance;
     }
+    this._currentLayoutIndex = this.initSlideIdx
 
     this.bindScrollEvent(scrollContainer);
   }
